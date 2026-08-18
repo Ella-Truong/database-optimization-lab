@@ -12,3 +12,66 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id       Int    @id @default(autoincrement())
+  username String
+  country  String
+
+  account Account?
+  orders  Order[]
+}
+
+model Account {
+  userId       Int    @id
+  email        String @unique
+  passwordHash String
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  products Product[]
+}
+
+model Product {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  price      Decimal  @db.Decimal(10, 2)
+  available  Int
+  categoryId Int
+  createdAt  DateTime @default(now())
+
+  category   Category    @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  userId    Int
+  status    OrderStatus
+  createdAt DateTime    @default(now())
+
+  user  User        @relation(fields: [userId], references: [id])
+  items OrderItem[]
+}
+
+model OrderItem {
+  id             Int     @id @default(autoincrement())
+  orderId        Int
+  productId      Int
+  quantity       Int
+  purchasedPrice Decimal @db.Decimal(10, 2)
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  CANCELLED
+}
