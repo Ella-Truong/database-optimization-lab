@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:17
-    container_name: database_optimization
+    container_name: database-optimization
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
